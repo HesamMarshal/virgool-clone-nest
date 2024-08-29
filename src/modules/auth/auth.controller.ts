@@ -1,7 +1,18 @@
-import { Controller } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Body, Controller, Post } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { AuthDto } from "./dto/auth.dto";
+import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 
-@Controller('auth')
+@Controller("auth")
+@ApiTags("Auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  // Methods
+  @Post("user-existence")
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  userExistence(@Body() authDto: AuthDto) {
+    return this.authService.userExistence(authDto);
+  }
 }
