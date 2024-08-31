@@ -8,3 +8,6 @@ export enum AuthMessage {
 }
 export enum NotFoundMessage {}
 export enum ValidationMessage {}
+export enum PublicMessage {
+  SendOtp = "OTP SENT",
+}
