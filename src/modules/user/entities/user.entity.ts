@@ -24,7 +24,7 @@ export class UserEntity extends BaseEntity {
   password: string;
 
   @Column({ nullable: true })
-  OtpId: number;
+  otpId: number;
   @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
   otp: OtpEntity;
 
