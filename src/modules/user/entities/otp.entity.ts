@@ -8,7 +8,7 @@ export class OtpEntity extends BaseEntity {
   @Column()
   code: string;
 
-  @Column({ nullable: true })
+  @Column()
   expiresIn: Date;
 
   @Column()
