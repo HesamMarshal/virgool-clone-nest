@@ -1,7 +1,9 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
+  Scope,
   UnauthorizedException,
 } from "@nestjs/common";
 import { AuthDto } from "./dto/auth.dto";
@@ -20,11 +22,12 @@ import {
 import { OtpEntity } from "../user/entities/otp.entity";
 import { randomInt } from "crypto";
 import { TokenService } from "./tokens.service";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { AuthResponse } from "./types/response";
+import { REQUEST } from "@nestjs/core";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
@@ -35,6 +38,11 @@ export class AuthService {
 
     @InjectRepository(OtpEntity)
     private otpRepository: Repository<OtpEntity>,
+
+    // make request available on all
+    @Inject(REQUEST)
+    private request: Request,
+
     private tokenService: TokenService
   ) {}
 
@@ -54,6 +62,12 @@ export class AuthService {
     }
   }
 
+  async checkOTP(code: string) {
+    const token = this.request.cookies?.[CookieKeys.OTP];
+    if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
+    return token;
+  }
+
   // Helper methods
 
   async login(method: AuthMethod, username: string) {
@@ -65,6 +79,7 @@ export class AuthService {
     // Save OTP
     const otp = await this.saveOTP(user.id);
 
+    // Create token that contains UserId, we use it identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
 
     // Send Otp Code : SMS or Email
@@ -98,6 +113,7 @@ export class AuthService {
     // Save OTP
     const otp = await this.saveOTP(user.id);
 
+    // Create token that contains UserId, we use it identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
 
     // Send Otp Code : SMS or Email
@@ -111,13 +127,15 @@ export class AuthService {
 
   async sendResponse(res: Response, result: AuthResponse) {
     const { token, code } = result;
-    res.cookie(CookieKeys.OTP, result.token, { httpOnly: true });
+    res.cookie(CookieKeys.OTP, result.token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 120000),
+    });
     res.json({
       message: PublicMessage.SendOtp,
       code,
     });
   }
-  async checkOTP() {}
 
   usernameValidator(method: AuthMethod, username: string) {
     switch (method) {
@@ -185,5 +203,7 @@ export class AuthService {
     return otp;
   }
 
-  async sendOTP() {}
+  async sendOTP() {
+    console.log("Send OTP via SMS/Email not Implemented yet");
+  }
 }
