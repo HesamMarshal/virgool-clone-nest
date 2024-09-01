@@ -39,7 +39,7 @@ export class AuthService {
     @InjectRepository(OtpEntity)
     private otpRepository: Repository<OtpEntity>,
 
-    // make request available on all
+    // make request available on all scope
     @Inject(REQUEST)
     private request: Request,
 
@@ -54,15 +54,18 @@ export class AuthService {
       case AuthType.Login:
         result = await this.login(method, username);
         return this.sendResponse(res, result);
+
       case AuthType.Register:
         result = await this.register(method, username);
         return this.sendResponse(res, result);
+
       default:
         throw new UnauthorizedException("Not Acceptable Login/Register");
     }
   }
 
   async checkOTP(code: string) {
+    // Checks if the code in browser cookie is equal to the code in DB
     const token = this.request.cookies?.[CookieKeys.OTP];
     if (!token) throw new UnauthorizedException(AuthMessage.ExpiredCode);
     return token;
@@ -72,11 +75,13 @@ export class AuthService {
 
   async login(method: AuthMethod, username: string) {
     const validUsername = this.usernameValidator(method, username);
-    let user: UserEntity = await this.checkExistUser(method, validUsername);
 
+    // Check if username is in DB
+    let user: UserEntity = await this.checkExistUser(method, validUsername);
+    // TODO: do we need it? it is an extra check to me
     if (!user) throw new UnauthorizedException(AuthMessage.NotFoundAccount);
 
-    // Save OTP
+    // Create and Save OTP in DB
     const otp = await this.saveOTP(user.id);
 
     // Create token that contains UserId, we use it identify the user
@@ -97,7 +102,7 @@ export class AuthService {
     let user: UserEntity = await this.checkExistUser(method, validUsername);
     if (user) throw new ConflictException(AuthMessage.AlreadyExistUser);
 
-    // user can't register with username
+    // user can't register with username - Register only by email or phone
     if (method === AuthMethod.Username)
       throw new BadRequestException(BadRequestMessage.InValidRegisterData);
 
@@ -110,10 +115,10 @@ export class AuthService {
     user.username = `m_${user.id}`;
     await this.userRepository.save(user);
 
-    // Save OTP
+    // Create and Save OTP in DB
     const otp = await this.saveOTP(user.id);
 
-    // Create token that contains UserId, we use it identify the user
+    // Create token that contains UserId, we use it to identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
 
     // Send Otp Code : SMS or Email
@@ -125,19 +130,8 @@ export class AuthService {
     };
   }
 
-  async sendResponse(res: Response, result: AuthResponse) {
-    const { token, code } = result;
-    res.cookie(CookieKeys.OTP, result.token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 120000),
-    });
-    res.json({
-      message: PublicMessage.SendOtp,
-      code,
-    });
-  }
-
   usernameValidator(method: AuthMethod, username: string) {
+    // This method checks if username is email/phone/user name, and checks if they are in correct format
     switch (method) {
       case AuthMethod.Email:
         if (isEmail(username)) {
@@ -160,6 +154,7 @@ export class AuthService {
   }
 
   async checkExistUser(method: AuthMethod, username: string) {
+    // checks if username is in DB or not
     let user: UserEntity;
     if (method === AuthMethod.Phone) {
       user = await this.userRepository.findOneBy({
@@ -179,8 +174,11 @@ export class AuthService {
   }
 
   async saveOTP(userId: number) {
+    // Create OTP code and save in DB
     const code = randomInt(10000, 99999).toString();
     const expiresIn = new Date(Date.now() + 120000);
+
+    // Check if userId is available in DB
     let otp = await this.otpRepository.findOneBy({ userId });
     let existOtp = false;
 
@@ -201,6 +199,21 @@ export class AuthService {
       await this.userRepository.update({ id: userId }, { otpId: otp.id });
 
     return otp;
+  }
+
+  async sendResponse(res: Response, result: AuthResponse) {
+    // Send token and code??? to the client
+
+    // TODO: in production we dont need code to be sent
+    const { token, code } = result;
+    res.cookie(CookieKeys.OTP, token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 120000),
+    });
+    res.json({
+      message: PublicMessage.SendOtp,
+      code,
+    });
   }
 
   async sendOTP() {
