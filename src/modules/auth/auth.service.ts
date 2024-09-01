@@ -12,9 +12,17 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "../user/entities/user.entity";
 import { Repository } from "typeorm";
 import { ProfileEntity } from "../user/entities/profile.entity";
-import { AuthMessage, BadRequestMessage } from "src/common/enums/message.enum";
+import {
+  AuthMessage,
+  BadRequestMessage,
+  PublicMessage,
+} from "src/common/enums/message.enum";
 import { OtpEntity } from "../user/entities/otp.entity";
 import { randomInt } from "crypto";
+import { TokenService } from "./tokens.service";
+import { Response } from "express";
+import { CookieKeys } from "src/common/enums/cookie.enum";
+import { AuthResponse } from "./types/response";
 
 @Injectable()
 export class AuthService {
@@ -26,22 +34,27 @@ export class AuthService {
     private profileRepository: Repository<ProfileEntity>,
 
     @InjectRepository(OtpEntity)
-    private otpRepository: Repository<OtpEntity>
+    private otpRepository: Repository<OtpEntity>,
+    private tokenService: TokenService
   ) {}
 
-  userExistence(authDto: AuthDto) {
+  // Endpoints
+  async userExistence(authDto: AuthDto, res: Response) {
     const { method, type, username } = authDto;
+    let result: AuthResponse;
     switch (type) {
       case AuthType.Login:
-        return this.login(method, username);
-
+        result = await this.login(method, username);
+        return this.sendResponse(res, result);
       case AuthType.Register:
-        return this.register(method, username);
-
+        result = await this.register(method, username);
+        return this.sendResponse(res, result);
       default:
         throw new UnauthorizedException("Not Acceptable Login/Register");
     }
   }
+
+  // Helper methods
 
   async login(method: AuthMethod, username: string) {
     const validUsername = this.usernameValidator(method, username);
@@ -49,15 +62,18 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException(AuthMessage.NotFoundAccount);
 
-    console.log(user);
-
     // Save OTP
     const otp = await this.saveOTP(user.id);
+
+    const token = this.tokenService.createOtpToken({ userId: user.id });
 
     // Send Otp Code : SMS or Email
     this.sendOTP();
 
-    return { code: otp.code };
+    return {
+      token,
+      code: otp.code,
+    };
   }
 
   async register(method: AuthMethod, username: string) {
@@ -82,39 +98,25 @@ export class AuthService {
     // Save OTP
     const otp = await this.saveOTP(user.id);
 
+    const token = this.tokenService.createOtpToken({ userId: user.id });
+
     // Send Otp Code : SMS or Email
     this.sendOTP();
 
-    return { code: otp.code };
+    return {
+      token,
+      code: otp.code,
+    };
   }
 
-  async saveOTP(userId: number) {
-    const code = randomInt(10000, 99999).toString();
-    const expiresIn = new Date(Date.now() + 120000);
-    let otp = await this.otpRepository.findOneBy({ userId });
-    let existOtp = false;
-
-    if (otp) {
-      existOtp = true;
-      otp.code = code;
-      otp.expiresIn = expiresIn;
-    } else {
-      otp = this.otpRepository.create({
-        code,
-        expiresIn,
-        userId,
-      });
-    }
-
-    otp = await this.otpRepository.save(otp);
-    if (!existOtp)
-      await this.userRepository.update({ id: userId }, { otpId: otp.id });
-
-    return otp;
+  async sendResponse(res: Response, result: AuthResponse) {
+    const { token, code } = result;
+    res.cookie(CookieKeys.OTP, result.token, { httpOnly: true });
+    res.json({
+      message: PublicMessage.SendOtp,
+      code,
+    });
   }
-
-  async sendOTP() {}
-
   async checkOTP() {}
 
   usernameValidator(method: AuthMethod, username: string) {
@@ -157,4 +159,31 @@ export class AuthService {
 
     return user;
   }
+
+  async saveOTP(userId: number) {
+    const code = randomInt(10000, 99999).toString();
+    const expiresIn = new Date(Date.now() + 120000);
+    let otp = await this.otpRepository.findOneBy({ userId });
+    let existOtp = false;
+
+    if (otp) {
+      existOtp = true;
+      otp.code = code;
+      otp.expiresIn = expiresIn;
+    } else {
+      otp = this.otpRepository.create({
+        code,
+        expiresIn,
+        userId,
+      });
+    }
+
+    otp = await this.otpRepository.save(otp);
+    if (!existOtp)
+      await this.userRepository.update({ id: userId }, { otpId: otp.id });
+
+    return otp;
+  }
+
+  async sendOTP() {}
 }
