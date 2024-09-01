@@ -17,3 +17,10 @@ export class AuthDto {
   @IsEnum(AuthMethod)
   method: AuthMethod;
 }
+
+export class CheckOtpDto {
+  @ApiProperty() // To show on swagger
+  @IsString()
+  @Length(5, 5)
+  code: string;
+}
