@@ -1,17 +1,28 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CookePayload } from "./types/payloads";
+import { CookiePayload } from "./types/payloads";
+import { AuthMessage } from "src/common/enums/message.enum";
 
 @Injectable()
 export class TokenService {
   constructor(private jwtService: JwtService) {}
 
-  createOtpToken(payload: CookePayload) {
+  createOtpToken(payload: CookiePayload) {
     const token = this.jwtService.sign(payload, {
       secret: process.env.OTP_TOKEN_SECRET,
       expiresIn: 120,
     });
 
     return token;
+  }
+
+  verifyOtpToken(token: string): CookiePayload {
+    try {
+      return this.jwtService.verify(token, {
+        secret: process.env.OTP_TOKEN_SECRET,
+      });
+    } catch (error) {
+      throw new UnauthorizedException(AuthMessage.TryAgain);
+    }
   }
 }
