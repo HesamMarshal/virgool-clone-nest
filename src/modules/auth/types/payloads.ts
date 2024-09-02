@@ -1,3 +1,3 @@
-export type CookePayload = {
+export type CookiePayload = {
   userId: number;
 };
