@@ -16,9 +16,11 @@ export class UserEntity extends BaseEntity {
 
   @Column({ unique: true, nullable: true })
   email: string;
+  // TODO: Add verify email
 
   @Column({ unique: true, nullable: true })
   phone: string;
+  // TODO: Add verify phone
 
   @Column({ nullable: true })
   password: string;
@@ -27,7 +29,6 @@ export class UserEntity extends BaseEntity {
   otpId: number;
   @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
   otp: OtpEntity;
-
   @JoinColumn()
 
   //  Date & time
