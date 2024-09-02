@@ -7,9 +7,11 @@ export enum AuthMessage {
   TryAgain = "دوباره تلاش کنید",
   AlreadyExistUser = "حساب کاربری با این مشخصات وجود دارد",
   ExpiredCode = "کد تایید منقضی شده است",
+  LoginAgain = "مجدد وارد حساب کاربری خود شوید",
 }
 export enum NotFoundMessage {}
 export enum ValidationMessage {}
 export enum PublicMessage {
   SendOtp = "کد یکبار مصرف ارسال شد",
+  LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
 }
