@@ -10,7 +10,8 @@ import {
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 
 @Controller("category")
 @ApiTags("Category")
@@ -18,6 +19,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
