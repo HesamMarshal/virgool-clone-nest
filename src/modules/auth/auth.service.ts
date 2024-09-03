@@ -81,8 +81,12 @@ export class AuthService {
     if (otp.code !== code)
       throw new UnauthorizedException(AuthMessage.TryAgain);
 
+    // Create access token
+    const accessToken = this.tokenService.createAccessToken({ userId });
+
     return {
       message: PublicMessage.LoggedIn,
+      accessToken,
     };
   }
 
