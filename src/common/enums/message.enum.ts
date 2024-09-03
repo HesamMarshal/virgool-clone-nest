@@ -5,11 +5,16 @@ export enum BadRequestMessage {
 export enum AuthMessage {
   NotFoundAccount = "حساب کاربری یافت نشد",
   TryAgain = "دوباره تلاش کنید",
+  // TODO: change to AlreadyExist
   AlreadyExistUser = "حساب کاربری با این مشخصات وجود دارد",
   ExpiredCode = "کد تایید منقضی شده است",
   LoginAgain = "مجدد وارد حساب کاربری خود شوید",
   LoginIsRequired = "وارد حساب کاربری خود شوید",
 }
+export enum CategoryMessage {
+  AlreadyExist = "این دسته بندی وجود دارد",
+}
+
 export enum NotFoundMessage {}
 export enum ValidationMessage {}
 export enum PublicMessage {
