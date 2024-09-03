@@ -91,7 +91,6 @@ export class AuthService {
   }
 
   // Helper methods
-
   async login(method: AuthMethod, username: string) {
     const validUsername = this.usernameValidator(method, username);
 
@@ -237,5 +236,13 @@ export class AuthService {
 
   async sendOTP() {
     console.log("Send OTP via SMS/Email not Implemented yet");
+  }
+
+  async validateAccessToken(token: string) {
+    const { userId } = this.tokenService.verifyAccessToken(token);
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) throw new UnauthorizedException(AuthMessage.LoginAgain);
+
+    return user;
   }
 }
