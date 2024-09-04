@@ -14,6 +14,7 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { ApiConsumes, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
+import { Pagination } from "src/common/decorators/pagination.decorator";
 
 @Controller("category")
 @ApiTags("Category")
@@ -27,8 +28,7 @@ export class CategoryController {
   }
 
   @Get()
-  @ApiQuery({ name: "page", example: 1 })
-  @ApiQuery({ name: "limit", example: 10 })
+  @Pagination()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.categoryService.findAll(paginationDto);
   }
