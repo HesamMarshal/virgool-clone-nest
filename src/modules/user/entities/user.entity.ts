@@ -8,6 +8,7 @@ import {
   OneToOne,
 } from "typeorm";
 import { OtpEntity } from "./otp.entity";
+import { ProfileEntity } from "./profile.entity";
 
 @Entity(EntityName.User)
 export class UserEntity extends BaseEntity {
@@ -25,10 +26,18 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   password: string;
 
+  // Connectio to  Otp Table
   @Column({ nullable: true })
   otpId: number;
   @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
   otp: OtpEntity;
+  @JoinColumn()
+
+  // Connectio to Profile Table
+  @Column({ nullable: true })
+  profileId: number;
+  @OneToOne(() => ProfileEntity, (profile) => profile.user, { nullable: true })
+  profile: ProfileEntity;
   @JoinColumn()
 
   //  Date & time
