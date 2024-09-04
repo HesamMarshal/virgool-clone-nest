@@ -13,6 +13,9 @@ export enum AuthMessage {
 }
 export enum CategoryMessage {
   AlreadyExist = "این دسته بندی وجود دارد",
+  NotFound = "دسته بندی پیدا نشد",
+  Deleted = "دسته بندی با موفقیت حذف گردید",
+  Updated = "دسته بندی با موفقیت به روز رسانی گردید",
 }
 
 export enum NotFoundMessage {}
