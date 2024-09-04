@@ -1,10 +1,18 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CategoryEntity } from "./entities/category.entity";
 import { Repository } from "typeorm";
-import { CategoryMessage, PublicMessage } from "src/common/enums/message.enum";
+import {
+  CategoryMessage,
+  NotFoundMessage,
+  PublicMessage,
+} from "src/common/enums/message.enum";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import {
   paginationGenerator,
@@ -45,16 +53,37 @@ export class CategoryService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) throw new NotFoundException(CategoryMessage.NotFound);
+
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const category = await this.findOne(id);
+
+    const { priority, title } = updateCategoryDto;
+    if (title) category.title = title;
+    if (priority) category.priority = priority;
+
+    await this.categoryRepository.save(category);
+    return {
+      message: CategoryMessage.Updated,
+    };
+
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    // checks if category exist
+    await this.findOne(id);
+
+    await this.categoryRepository.delete({ id });
+
+    return {
+      message: CategoryMessage.Deleted,
+    };
   }
 
   //
