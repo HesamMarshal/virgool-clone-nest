@@ -11,8 +11,9 @@ import {
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { ProfileDto } from "./dto/profile.dto";
+import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 
 @Controller("user")
 @ApiTags("User")
@@ -21,6 +22,7 @@ export class UserController {
 
   // TODO: changeProfile to updateProfile
   @Put("/profile")
+  @ApiConsumes(SwaggerConsumes.MultipartData)
   changeProfile(@Body() profileDto: ProfileDto) {
     return this.userService.changeProfile(profileDto);
   }
