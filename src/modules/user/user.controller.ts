@@ -59,6 +59,11 @@ export class UserController {
     return this.userService.changeProfile(files, profileDto);
   }
 
+  @Get("/profile")
+  profile() {
+    return this.userService.profile();
+  }
+
   // @Post()
   // create(@Body() createUserDto: CreateUserDto) {
   //   return this.userService.create(createUserDto);

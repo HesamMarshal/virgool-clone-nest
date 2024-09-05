@@ -89,6 +89,14 @@ export class UserService {
       );
     return profile;
   }
+
+  profile() {
+    const { id } = this.request.user;
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ["profile"],
+    });
+  }
   // create(createUserDto: CreateUserDto) {
   //   return "This action adds a new user";
   // }
