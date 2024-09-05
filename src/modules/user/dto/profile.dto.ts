@@ -11,19 +11,19 @@ export class ProfileDto {
   @Length(10, 200)
   bio: string;
 
-  @ApiPropertyOptional({ nullable: true, format: "binary" })
-  profile_image: string;
-
-  //  Banner pictuer
-  @ApiPropertyOptional({ nullable: true, format: "binary" })
-  bg_image: string;
-
   @ApiPropertyOptional({ nullable: true, enum: Gender })
   @IsEnum(Gender)
   gender: string;
 
   @ApiPropertyOptional({ nullable: true, example: "2024-09-04T10:03:37.725Z" })
   birthday: Date;
+
+  @ApiPropertyOptional({ nullable: true, format: "binary" })
+  profile_image: string;
+
+  //  Banner pictuer
+  @ApiPropertyOptional({ nullable: true, format: "binary" })
+  bg_image: string;
 
   // Social Media
   @ApiPropertyOptional({ nullable: true })
