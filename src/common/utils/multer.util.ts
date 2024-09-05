@@ -4,6 +4,7 @@ import { extname, join } from "path";
 import { ValidationMessage } from "../enums/message.enum";
 import { BadRequestException } from "@nestjs/common";
 
+// Define Types
 export type CallbackDestination = (
   error: Error | null,
   destination: string
@@ -12,7 +13,9 @@ export type CallbackDestination = (
 export type CallbackFilename = (error: Error | null, filename: string) => void;
 
 export type MulterFile = Express.Multer.File;
+// End Define Types
 
+// Helper Functions
 export function multerDestination(fieldName: string) {
   return function (
     req: Request,
