@@ -30,12 +30,11 @@ export class UserService {
     // let { profile_image, bg_image } = files;
     if (files?.profile_image?.length > 0) {
       let [image] = files?.profile_image;
-      profileDto.profile_image = image.path;
+      profileDto.profile_image = image?.path.slice(7);
     }
     if (files?.bg_image?.length > 0) {
       let [image] = files?.bg_image;
-      profileDto.bg_image = image.path;
-      console.log(image.path);
+      profileDto.bg_image = image?.path.slice(7);
     }
 
     const { id: userId, profileId } = this.request.user;
