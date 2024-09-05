@@ -19,7 +19,9 @@ export enum CategoryMessage {
 }
 
 export enum NotFoundMessage {}
-export enum ValidationMessage {}
+export enum ValidationMessage {
+  InvalidImageForamt = "فرمت تصویر وارد شده قابل قبول نیست",
+}
 export enum PublicMessage {
   SendOtp = "کد یکبار مصرف ارسال شد",
   LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
