@@ -12,33 +12,25 @@ import { ProfileEntity } from "./profile.entity";
 
 @Entity(EntityName.User)
 export class UserEntity extends BaseEntity {
+  // Fileds
+
   @Column({ unique: true, nullable: true })
   username: string;
 
   @Column({ unique: true, nullable: true })
   email: string;
-  // TODO: Add verify email
 
   @Column({ unique: true, nullable: true })
   phone: string;
-  // TODO: Add verify phone
 
   @Column({ nullable: true })
   password: string;
 
-  // Connectio to  Otp Table
   @Column({ nullable: true })
   otpId: number;
-  @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
-  otp: OtpEntity;
-  @JoinColumn()
 
-  // Connectio to Profile Table
   @Column({ nullable: true })
   profileId: number;
-  @OneToOne(() => ProfileEntity, (profile) => profile.user, { nullable: true })
-  profile: ProfileEntity;
-  @JoinColumn()
 
   //  Date & time
   @CreateDateColumn()
@@ -46,4 +38,13 @@ export class UserEntity extends BaseEntity {
 
   @CreateDateColumn()
   updated_at: Date;
+
+  // Table Connections
+  @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
+  @JoinColumn()
+  otp: OtpEntity;
+
+  @OneToOne(() => ProfileEntity, (profile) => profile.user, { nullable: true })
+  @JoinColumn()
+  profile: ProfileEntity;
 }
