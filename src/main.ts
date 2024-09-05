@@ -10,6 +10,7 @@ async function bootstrap() {
   // Confgure Swagger
   SwaggerConfigInit(app);
 
+  // Static folder
   app.useStaticAssets("public");
 
   // Activate Cookie Parser
