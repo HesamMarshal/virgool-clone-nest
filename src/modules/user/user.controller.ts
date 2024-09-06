@@ -28,7 +28,7 @@ import {
 import { AuthGuard } from "../auth/guards/auth.guard";
 import { ProfileImages } from "./types/files.type";
 import { UploadedOptionalFiles } from "src/common/decorators/uploadfile.decorator";
-import { ChangeEmailDto } from "./entities/profile.entity";
+import { ChangeEmailDto, ChangePhoneDto } from "./entities/profile.entity";
 import { Response } from "express";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { CookieOptions } from "src/common/utils/cookie.util";
@@ -88,6 +88,26 @@ export class UserController {
   @Post("/verify-email-otp")
   async verifyEmail(@Body() otpDto: CheckOtpDto) {
     return this.userService.verifyEmail(otpDto.code);
+  }
+
+  @Patch("/change-phone")
+  async changePhone(@Body() phoneDto: ChangePhoneDto, @Res() res: Response) {
+    const { code, token, message } = await this.userService.changePhone(
+      phoneDto.phone
+    );
+
+    if (message) return res.json(message);
+
+    res.cookie(CookieKeys.PhoneOTP, token, CookieOptions());
+    res.json({
+      code,
+      message: PublicMessage.SendOtp,
+    });
+  }
+
+  @Post("/verify-phone-otp")
+  async verifyPhone(@Body() otpDto: CheckOtpDto) {
+    return this.userService.verifyPhone(otpDto.code);
   }
 
   // @Post()
