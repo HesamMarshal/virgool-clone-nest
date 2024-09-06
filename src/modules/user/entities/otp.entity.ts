@@ -5,6 +5,7 @@ import { UserEntity } from "./user.entity";
 
 @Entity(EntityName.Otp)
 export class OtpEntity extends BaseEntity {
+  // Fields
   @Column()
   code: string;
 
@@ -13,6 +14,11 @@ export class OtpEntity extends BaseEntity {
 
   @Column()
   userId: number;
+
+  @Column({ nullable: true })
+  method: string;
+
+  // Relations
   @OneToOne(() => UserEntity, (user) => user.otp, { onDelete: "CASCADE" })
   user: UserEntity;
 }
