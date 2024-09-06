@@ -27,6 +27,8 @@ export enum CategoryMessage {
 export enum NotFoundMessage {}
 export enum ValidationMessage {
   InvalidImageForamt = "فرمت تصویر وارد شده قابل قبول نیست",
+  InvalidEmailForamt = "فرمت ایمیل وارد شده قابل قبول نیست",
+  InvalidPhoneForamt = "فرمت شماره موبایل وارد شده قابل قبول نیست",
 }
 export enum PublicMessage {
   SendOtp = "کد یکبار مصرف ارسال شد",
