@@ -11,6 +11,7 @@ import { Request } from "express";
 import { isDate } from "class-validator";
 import { Gender } from "./enums/gender.enum";
 import { ProfileImages } from "./types/files.type";
+import { UserMessage } from "src/common/enums/message.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -25,8 +26,6 @@ export class UserService {
   ) {}
 
   async changeProfile(files: ProfileImages, profileDto: ProfileDto) {
-    console.log(files);
-
     // let { profile_image, bg_image } = files;
     if (files?.profile_image?.length > 0) {
       let [image] = files?.profile_image;
@@ -86,7 +85,9 @@ export class UserService {
         // Update items:
         { profileId: profile.id }
       );
-    return profile;
+    return {
+      message: UserMessage.Updated,
+    };
   }
 
   profile() {
