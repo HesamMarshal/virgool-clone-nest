@@ -168,6 +168,55 @@ export class UserService {
       // accessToken,
     };
   }
+  async changePhone(phone: string) {
+    const { id } = this.request.user;
+    const user = await this.userRepository.findOneBy({ phone });
+    if (user && user.id !== id)
+      throw new ConflictException(UserMessage.ConflictPhone);
+    else if (user && user.id === id) {
+      return { message: PublicMessage.Updated };
+    }
+
+    await this.userRepository.update({ id }, { new_phone: phone });
+    const otp = await this.authService.saveOTP(id, AuthMethod.Phone);
+    const token = await this.tokenService.createPhoneToken({ phone });
+    return {
+      code: otp.code,
+      token,
+    };
+  }
+
+  async verifyPhone(code: string) {
+    const { id: userId, new_phone } = this.request.user;
+
+    const token = this.request.cookies?.[CookieKeys.PhoneOTP];
+    console.log(token);
+
+    if (!token) throw new BadRequestException(AuthMessage.ExpiredCode);
+    const { phone } = this.tokenService.verifyPhoneToken(token);
+
+    if (phone !== new_phone)
+      throw new BadRequestException(BadRequestMessage.SomethingWrong);
+
+    const otp = await this.checkOtp(userId, code);
+
+    if (otp.method !== AuthMethod.Phone)
+      throw new BadRequestException(BadRequestMessage.SomethingWrong);
+
+    await this.userRepository.update(
+      { id: userId },
+      {
+        phone,
+        verify_phone: true,
+        new_phone: null,
+      }
+    );
+
+    return {
+      message: UserMessage.Updated,
+      // accessToken,
+    };
+  }
 
   async checkOtp(userId: number, code: string) {
     const otp = await this.otpRepository.findOneBy({ userId });
