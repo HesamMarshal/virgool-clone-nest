@@ -2,6 +2,9 @@ import { BaseEntity } from "src/common/abstracts/base.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { Column, Entity, OneToOne } from "typeorm";
 import { UserEntity } from "./user.entity";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsMobilePhone } from "class-validator";
+import { ValidationMessage } from "src/common/enums/message.enum";
 
 @Entity(EntityName.Profile)
 export class ProfileEntity extends BaseEntity {
@@ -35,4 +38,16 @@ export class ProfileEntity extends BaseEntity {
   userId: number;
   @OneToOne(() => UserEntity, (user) => user.profile, { onDelete: "CASCADE" })
   user: UserEntity;
+}
+
+export class ChangeEmailDto {
+  @ApiProperty()
+  @IsEmail(null, { message: ValidationMessage.InvalidEmailForamt })
+  email: string;
+}
+
+export class ChangePhoneDto {
+  @ApiProperty()
+  @IsMobilePhone("fa-IR", {}, { message: ValidationMessage.InvalidPhoneForamt })
+  phone: string;
 }
