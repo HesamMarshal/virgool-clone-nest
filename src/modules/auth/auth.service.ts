@@ -84,6 +84,11 @@ export class AuthService {
     // Create access token
     const accessToken = this.tokenService.createAccessToken({ userId });
 
+    if (otp.method == AuthMethod.Email) {
+      await this.userRepository.update({ id: userId }, { verify_email: true });
+    } else if (otp.method == AuthMethod.Phone) {
+      await this.userRepository.update({ id: userId }, { verify_phone: true });
+    }
     return {
       message: PublicMessage.LoggedIn,
       accessToken,
@@ -135,6 +140,8 @@ export class AuthService {
 
     // Create and Save OTP in DB
     const otp = await this.saveOTP(user.id);
+    otp.method = method;
+    await this.otpRepository.save(otp);
 
     // Create token that contains UserId, we use it to identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
