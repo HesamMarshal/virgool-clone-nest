@@ -1,6 +1,7 @@
 export enum BadRequestMessage {
   InValidLoginData = "اطلاعات ارسال شده برای ورود صحیح نمی باشد",
   InValidRegisterData = "اطلاعات ارسال شده برای ثبت نام صحیح نمی باشد",
+  SomethingWrong = "خطایی پیش آمده",
 }
 export enum AuthMessage {
   NotFoundAccount = "حساب کاربری یافت نشد",
@@ -13,6 +14,7 @@ export enum AuthMessage {
 }
 export enum UserMessage {
   Updated = "حساب کاربری به روز رسانی شد",
+  ConflictEmail = "این ایمیل متعلق به حساب کاربری دیگری است",
 }
 
 export enum CategoryMessage {
@@ -30,4 +32,5 @@ export enum PublicMessage {
   SendOtp = "کد یکبار مصرف ارسال شد",
   LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
   Created = "با موفقیت ایجاد شد",
+  Updated = "به روز رسانی شد",
 }
