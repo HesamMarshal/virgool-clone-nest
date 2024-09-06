@@ -11,6 +11,10 @@ export enum AuthMessage {
   LoginAgain = "مجدد وارد حساب کاربری خود شوید",
   LoginIsRequired = "وارد حساب کاربری خود شوید",
 }
+export enum UserMessage {
+  Updated = "حساب کاربری به روز رسانی شد",
+}
+
 export enum CategoryMessage {
   AlreadyExist = "این دسته بندی وجود دارد",
   NotFound = "دسته بندی پیدا نشد",
