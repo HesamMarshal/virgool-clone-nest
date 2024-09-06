@@ -8,6 +8,7 @@ import {
   AccessTokenPayload,
   CookiePayload,
   EmailTokenPayload,
+  PhoneTokenPayload,
 } from "./types/payloads";
 import { AuthMessage, BadRequestMessage } from "src/common/enums/message.enum";
 
@@ -65,6 +66,24 @@ export class TokenService {
     try {
       return this.jwtService.verify(token, {
         secret: process.env.EMAIL_TOKEN_SECRET,
+      });
+    } catch (error) {
+      throw new BadRequestException(BadRequestMessage.SomethingWrong);
+    }
+  }
+  createPhoneToken(payload: PhoneTokenPayload) {
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.PHONE_TOKEN_SECRET,
+      expiresIn: 120,
+    });
+
+    return token;
+  }
+
+  verifyPhoneToken(token: string): PhoneTokenPayload {
+    try {
+      return this.jwtService.verify(token, {
+        secret: process.env.PHONE_TOKEN_SECRET,
       });
     } catch (error) {
       throw new BadRequestException(BadRequestMessage.SomethingWrong);
