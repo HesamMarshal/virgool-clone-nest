@@ -5,3 +5,11 @@ export type CookiePayload = {
 export type AccessTokenPayload = {
   userId: number;
 };
+
+export type EmailTokenPayload = {
+  email: number;
+};
+
+export type PhoneTokenPayload = {
+  phone: number;
+};
