@@ -33,6 +33,7 @@ import { Response } from "express";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { CookieOptions } from "src/common/utils/cookie.util";
 import { PublicMessage } from "src/common/enums/message.enum";
+import { CheckOtpDto } from "../auth/dto/auth.dto";
 
 @Controller("user")
 @ApiTags("User")
@@ -82,6 +83,11 @@ export class UserController {
       code,
       message: PublicMessage.SendOtp,
     });
+  }
+
+  @Post("/verify-email-otp")
+  async verifyEmail(@Body() otpDto: CheckOtpDto) {
+    return this.userService.verifyEmail(otpDto.code);
   }
 
   // @Post()
