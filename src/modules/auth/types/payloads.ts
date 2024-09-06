@@ -7,9 +7,9 @@ export type AccessTokenPayload = {
 };
 
 export type EmailTokenPayload = {
-  email: number;
+  email: string;
 };
 
 export type PhoneTokenPayload = {
-  phone: number;
+  phone: string;
 };
