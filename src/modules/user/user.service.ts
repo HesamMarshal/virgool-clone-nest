@@ -1,6 +1,4 @@
-import { Inject, Injectable, Scope } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { ConflictException, Inject, Injectable, Scope } from "@nestjs/common";
 import { ProfileDto } from "./dto/profile.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
@@ -11,7 +9,9 @@ import { Request } from "express";
 import { isDate } from "class-validator";
 import { Gender } from "./enums/gender.enum";
 import { ProfileImages } from "./types/files.type";
-import { UserMessage } from "src/common/enums/message.enum";
+import { PublicMessage, UserMessage } from "src/common/enums/message.enum";
+import { AuthService } from "../auth/auth.service";
+import { TokenService } from "../auth/tokens.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -22,7 +22,10 @@ export class UserService {
     @InjectRepository(ProfileEntity)
     private profileRepository: Repository<ProfileEntity>,
 
-    @Inject(REQUEST) private request: Request
+    @Inject(REQUEST) private request: Request,
+
+    private authService: AuthService,
+    private tokenService: TokenService
   ) {}
 
   async changeProfile(files: ProfileImages, profileDto: ProfileDto) {
@@ -97,23 +100,21 @@ export class UserService {
       relations: ["profile"],
     });
   }
-  // create(createUserDto: CreateUserDto) {
-  //   return "This action adds a new user";
-  // }
 
-  // findAll() {
-  //   return `This action returns all user`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async changeEmail(email: string) {
+    const { id } = this.request.user;
+    const user = await this.userRepository.findOneBy({ email });
+    if (user && user.id !== id)
+      throw new ConflictException(UserMessage.ConflictEmail);
+    else if (user && user.id === id) {
+      return { message: PublicMessage.Updated };
+    }
+    user.new_email = email;
+    const otp = await this.authService.saveOTP(user.id);
+    const token = await this.tokenService.createEmailToken({ email });
+    return {
+      code: otp.code,
+      token,
+    };
+  }
 }
