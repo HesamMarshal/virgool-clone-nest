@@ -5,30 +5,25 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Put,
   UseInterceptors,
-  UploadedFiles,
-  ParseFilePipe,
   UseGuards,
   Res,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
-import { ChangeEmailDto, ChangePhoneDto, ProfileDto } from "./dto/profile.dto";
+import {
+  ChangeEmailDto,
+  ChangePhoneDto,
+  ChangeUsernameDto,
+  ProfileDto,
+} from "./dto/profile.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import {
-  multerDestination,
-  multerFilename,
-  multerStorage,
-} from "src/common/utils/multer.util";
+import { multerStorage } from "src/common/utils/multer.util";
 import { AuthGuard } from "../auth/guards/auth.guard";
 import { ProfileImages } from "./types/files.type";
 import { UploadedOptionalFiles } from "src/common/decorators/uploadfile.decorator";
-
 import { Response } from "express";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { CookieOptions } from "src/common/utils/cookie.util";
@@ -110,23 +105,8 @@ export class UserController {
     return this.userService.verifyPhone(otpDto.code);
   }
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
-
-  // @Get(":id")
-  // findOne(@Param("id") id: string) {
-  //   return this.userService.findOne(+id);
-  // }
-
-  // @Delete(":id")
-  // remove(@Param("id") id: string) {
-  //   return this.userService.remove(+id);
-  // }
+  @Patch("/change-username")
+  async changeUsername(@Body() changeUsernameDto: ChangeUsernameDto) {
+    return this.userService.changeUsername(changeUsernameDto.username);
+  }
 }

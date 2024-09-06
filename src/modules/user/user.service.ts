@@ -229,4 +229,17 @@ export class UserService {
 
     return otp;
   }
+
+  async changeUsername(username: string) {
+    const { id } = this.request.user;
+    const user = await this.userRepository.findOneBy({ username });
+    if (user && user.id !== id)
+      throw new ConflictException(UserMessage.ConflictUsername);
+    else if (user && user.id === id) {
+      return { message: PublicMessage.Updated };
+    }
+
+    await this.userRepository.update({ id }, { username: username });
+    return { message: PublicMessage.Updated };
+  }
 }
