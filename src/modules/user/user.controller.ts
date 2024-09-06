@@ -11,6 +11,7 @@ import {
   UploadedFiles,
   ParseFilePipe,
   UseGuards,
+  Res,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -19,7 +20,6 @@ import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { ProfileDto } from "./dto/profile.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
 import {
   multerDestination,
   multerFilename,
@@ -28,6 +28,11 @@ import {
 import { AuthGuard } from "../auth/guards/auth.guard";
 import { ProfileImages } from "./types/files.type";
 import { UploadedOptionalFiles } from "src/common/decorators/uploadfile.decorator";
+import { ChangeEmailDto } from "./entities/profile.entity";
+import { Response } from "express";
+import { CookieKeys } from "src/common/enums/cookie.enum";
+import { CookieOptions } from "src/common/utils/cookie.util";
+import { PublicMessage } from "src/common/enums/message.enum";
 
 @Controller("user")
 @ApiTags("User")
@@ -64,6 +69,21 @@ export class UserController {
     return this.userService.profile();
   }
 
+  @Patch("/change-email")
+  async changeEmail(@Body() emailDto: ChangeEmailDto, @Res() res: Response) {
+    const { code, token, message } = await this.userService.changeEmail(
+      emailDto.email
+    );
+
+    if (message) return res.json(message);
+
+    res.cookie(CookieKeys.EmailOTP, token, CookieOptions());
+    res.json({
+      code,
+      message: PublicMessage.SendOtp,
+    });
+  }
+
   // @Post()
   // create(@Body() createUserDto: CreateUserDto) {
   //   return this.userService.create(createUserDto);
@@ -77,11 +97,6 @@ export class UserController {
   // @Get(":id")
   // findOne(@Param("id") id: string) {
   //   return this.userService.findOne(+id);
-  // }
-
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
   // }
 
   // @Delete(":id")
