@@ -17,7 +17,7 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
-import { ProfileDto } from "./dto/profile.dto";
+import { ChangeEmailDto, ChangePhoneDto, ProfileDto } from "./dto/profile.dto";
 import { SwaggerConsumes } from "src/common/enums/swagger-consume.enum";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import {
@@ -28,7 +28,7 @@ import {
 import { AuthGuard } from "../auth/guards/auth.guard";
 import { ProfileImages } from "./types/files.type";
 import { UploadedOptionalFiles } from "src/common/decorators/uploadfile.decorator";
-import { ChangeEmailDto, ChangePhoneDto } from "./entities/profile.entity";
+
 import { Response } from "express";
 import { CookieKeys } from "src/common/enums/cookie.enum";
 import { CookieOptions } from "src/common/utils/cookie.util";
