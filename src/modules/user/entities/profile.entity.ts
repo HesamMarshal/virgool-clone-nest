@@ -42,7 +42,7 @@ export class ProfileEntity extends BaseEntity {
 
 export class ChangeEmailDto {
   @ApiProperty()
-  @IsEmail(null, { message: ValidationMessage.InvalidEmailForamt })
+  @IsEmail({}, { message: ValidationMessage.InvalidEmailForamt })
   email: string;
 }
 
