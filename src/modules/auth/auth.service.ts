@@ -106,7 +106,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException(AuthMessage.NotFoundAccount);
 
     // Create and Save OTP in DB
-    const otp = await this.saveOTP(user.id);
+    const otp = await this.saveOTP(user.id, method);
 
     // Create token that contains UserId, we use it identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
@@ -140,9 +140,9 @@ export class AuthService {
     await this.userRepository.save(user);
 
     // Create and Save OTP in DB
-    const otp = await this.saveOTP(user.id);
-    otp.method = method;
-    await this.otpRepository.save(otp);
+    const otp = await this.saveOTP(user.id, method);
+    // otp.method = method;
+    // await this.otpRepository.save(otp);
 
     // Create token that contains UserId, we use it to identify the user
     const token = this.tokenService.createOtpToken({ userId: user.id });
@@ -199,7 +199,7 @@ export class AuthService {
     return user;
   }
 
-  async saveOTP(userId: number) {
+  async saveOTP(userId: number, method: AuthMethod) {
     // Create OTP code and save in DB
     const code = randomInt(10000, 99999).toString();
     const expiresIn = new Date(Date.now() + 120000);
@@ -212,11 +212,13 @@ export class AuthService {
       existOtp = true;
       otp.code = code;
       otp.expiresIn = expiresIn;
+      otp.method = method;
     } else {
       otp = this.otpRepository.create({
         code,
         expiresIn,
         userId,
+        method,
       });
     }
 
