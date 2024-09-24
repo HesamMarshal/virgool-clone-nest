@@ -3,4 +3,6 @@ export enum EntityName {
   Profile = "profile",
   Otp = "otp",
   Category = "category",
+  Blog = "blog",
+  BlogCategory = "blog_category",
 }
