@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   UpdateDateColumn,
 } from "typeorm";
 import { BlogStatus } from "../enum/status.enum";
 import { UserEntity } from "src/modules/user/entities/user.entity";
+import { BlogLikesEntity } from "./like.entity";
 
 @Entity(EntityName.Blog)
 export class BlogEntity extends BaseEntity {
@@ -30,15 +32,17 @@ export class BlogEntity extends BaseEntity {
   @Column({ default: BlogStatus.Draft })
   status: string;
 
+  // Relations
+  @ManyToOne(() => UserEntity, (user) => user.blogs, { onDelete: "CASCADE" })
+  author: UserEntity;
+
+  @OneToMany(() => BlogLikesEntity, (like) => like.blog)
+  likes: BlogLikesEntity[];
+
   // Date and time
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   update_at: Date;
-
-  // Relations
-
-  @ManyToOne(() => UserEntity, (user) => user.blogs, { onDelete: "CASCADE" })
-  author: UserEntity;
 }

@@ -11,6 +11,7 @@ import {
 import { OtpEntity } from "./otp.entity";
 import { ProfileEntity } from "./profile.entity";
 import { BlogEntity } from "src/modules/blog/entities/blog.entity";
+import { BlogLikesEntity } from "src/modules/blog/entities/like.entity";
 
 @Entity(EntityName.User)
 export class UserEntity extends BaseEntity {
@@ -46,13 +47,6 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   profileId: number;
 
-  //  Date & time
-  @CreateDateColumn()
-  created_at: Date;
-
-  @CreateDateColumn()
-  updated_at: Date;
-
   // Table Connections
   @OneToOne(() => OtpEntity, (otp) => otp.user, { nullable: true })
   @JoinColumn()
@@ -64,4 +58,15 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => BlogEntity, (blog) => blog.author)
   blogs: BlogEntity[];
+
+  // like.entity.ts
+  @OneToMany(() => BlogLikesEntity, (like) => like.user)
+  blog_likes: BlogLikesEntity[];
+
+  //  Date & time
+  @CreateDateColumn()
+  created_at: Date;
+
+  @CreateDateColumn()
+  updated_at: Date;
 }
