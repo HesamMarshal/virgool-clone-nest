@@ -8,6 +8,7 @@ import { TypeOrmConfig } from "./config/typeorm.config";
 import { UserModule } from "./modules/user/user.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { CategoryModule } from './modules/category/category.module';
+import { BlogModule } from './modules/blog/blog.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CategoryModule } from './modules/category/category.module';
     AuthModule,
     UserModule,
     CategoryModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
