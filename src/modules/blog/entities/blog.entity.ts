@@ -36,4 +36,9 @@ export class BlogEntity extends BaseEntity {
 
   @UpdateDateColumn()
   update_at: Date;
+
+  // Relations
+
+  @ManyToOne(() => UserEntity, (user) => user.blogs, { onDelete: "CASCADE" })
+  author: UserEntity;
 }
