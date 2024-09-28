@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { isNotEmpty, IsNotEmpty, Length } from "class-validator";
+import { isNotEmpty, IsNotEmpty, IsNumber, Length } from "class-validator";
 
 export class CreateBlogDto {
   @ApiProperty()
@@ -15,7 +15,8 @@ export class CreateBlogDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  time_for_study: string;
+  @IsNumber()
+  time_for_study: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -25,5 +26,5 @@ export class CreateBlogDto {
   @ApiProperty()
   @IsNotEmpty()
   @Length(10, 100)
-  contet: string;
+  content: string;
 }
