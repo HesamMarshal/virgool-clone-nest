@@ -1,7 +1,12 @@
-import { Controller } from '@nestjs/common';
-import { BlogService } from './blog.service';
+import { Body, Controller, Post } from "@nestjs/common";
+import { BlogService } from "./blog.service";
+import { CreateBlogDto } from "./dto/blog.dto";
 
-@Controller('blog')
+@Controller("blog")
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
+  @Post("/")
+  createBlog(@Body() blogDto: CreateBlogDto) {
+    return this.blogService.create(blogDto);
+  }
 }
