@@ -24,6 +24,6 @@ export class CreateBlogDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Length(100)
+  @Length(10, 100)
   contet: string;
 }
