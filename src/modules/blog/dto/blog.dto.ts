@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
+  IsArray,
   isNotEmpty,
   IsNotEmpty,
   IsNumber,
@@ -33,6 +34,10 @@ export class CreateBlogDto {
   @IsNotEmpty()
   @Length(10, 100)
   content: string;
+
+  @ApiProperty({ type: String, isArray: true })
+  // @IsArray()
+  categories: string[] | string;
 }
 
 export class FilterBlogDto {
