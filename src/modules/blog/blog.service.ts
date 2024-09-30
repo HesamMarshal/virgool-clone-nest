@@ -1,8 +1,8 @@
 import { BadRequestException, Inject, Injectable, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BlogEntity } from "./entities/blog.entity";
-import { Repository } from "typeorm";
-import { CreateBlogDto } from "./dto/blog.dto";
+import { FindOptionsWhere, Repository } from "typeorm";
+import { CreateBlogDto, FilterBlogDto } from "./dto/blog.dto";
 import { createSlug, randomId } from "src/common/utils/functions.util";
 import { BlogStatus } from "./enum/status.enum";
 import { REQUEST } from "@nestjs/core";
@@ -98,11 +98,33 @@ export class BlogService {
     });
   }
 
-  async blogList(paginationDto: PaginationDto) {
+  async blogList(paginationDto: PaginationDto, filterDto: FilterBlogDto) {
     const { limit, page, skip } = paginationSolver(paginationDto);
+    const { category } = filterDto;
+    let where: FindOptionsWhere<BlogEntity> = {};
+    if (category) {
+      where["categories"] = {
+        category: {
+          title: category,
+        },
+      };
+    }
 
     const [blogs, count] = await this.blogRepository.findAndCount({
-      where: {},
+      relations: {
+        categories: {
+          category: true,
+        },
+      },
+      where,
+      select: {
+        categories: {
+          id: true,
+          category: {
+            title: true,
+          },
+        },
+      },
       order: { id: "DESC" },
       skip,
       take: limit,
