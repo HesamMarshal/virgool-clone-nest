@@ -8,6 +8,11 @@ import { BlogStatus } from "./enum/status.enum";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
 import { PublicMessage } from "src/common/enums/message.enum";
+import { PaginationDto } from "src/common/dtos/pagination.dto";
+import {
+  paginationGenerator,
+  paginationSolver,
+} from "src/common/utils/pagination.util";
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -53,6 +58,21 @@ export class BlogService {
       },
       order: { id: "DESC" },
     });
+  }
+
+  async blogList(paginationDto: PaginationDto) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+
+    const [blogs, count] = await this.blogRepository.findAndCount({
+      where: {},
+      order: { id: "DESC" },
+      skip,
+      take: limit,
+    });
+    return {
+      pagination: paginationGenerator(count, page, limit),
+      blogs,
+    };
   }
 
   // Helpers
