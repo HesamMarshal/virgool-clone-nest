@@ -34,3 +34,7 @@ export class CreateBlogDto {
   @Length(10, 100)
   content: string;
 }
+
+export class FilterBlogDto {
+  search: string;
+}
