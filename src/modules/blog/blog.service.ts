@@ -44,6 +44,18 @@ export class BlogService {
       message: PublicMessage.Created,
     };
   }
+
+  async myBlog() {
+    const { id } = this.request.user;
+    return this.blogRepository.find({
+      where: {
+        authorID: id,
+      },
+      order: { id: "DESC" },
+    });
+  }
+
+  // Helpers
   async checkBlogBySlug(slug: string) {
     const blog = await this.blogRepository.findOneBy({ slug });
     return !!blog;
