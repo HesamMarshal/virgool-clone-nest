@@ -38,6 +38,12 @@ export class CategoryService {
       category,
     };
   }
+  async insertByTitle(title: string) {
+    const category = this.categoryRepository.create({
+      title,
+    });
+    return await this.categoryRepository.save(category);
+  }
 
   async findAll(paginationDto: PaginationDto) {
     const { limit, page, skip } = paginationSolver(paginationDto);
@@ -58,6 +64,9 @@ export class CategoryService {
     if (!category) throw new NotFoundException(CategoryMessage.NotFound);
 
     return category;
+  }
+  async findOneByTitle(title: string) {
+    return await this.categoryRepository.findOneBy({ title });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
