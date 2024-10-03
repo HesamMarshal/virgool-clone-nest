@@ -80,7 +80,7 @@ export class BlogService {
       time_for_study,
       image,
       status: BlogStatus.Draft,
-      authorID: user.id,
+      authorId: user.id,
     });
 
     blog = await this.blogRepository.save(blog);
@@ -107,7 +107,7 @@ export class BlogService {
     const { id } = this.request.user;
     return this.blogRepository.find({
       where: {
-        authorID: id,
+        authorId: id,
       },
       order: { id: "DESC" },
     });
@@ -138,8 +138,17 @@ export class BlogService {
       .createQueryBuilder(EntityName.Blog)
       .leftJoin("blog.categories", "categories")
       .leftJoin("categories.category", "category")
-      .addSelect(["categories.id", "category.title"])
+      .leftJoin("blog.author", "author")
+      .leftJoin("author.profile", "profile")
+      .addSelect([
+        "categories.id",
+        "category.title",
+        "author.username",
+        "author.id",
+        "profile.nick_name",
+      ])
       .where(where, { category, search })
+      .loadRelationCountAndMap("blog.likes", "blog.likes")
       .orderBy("blog.id", "DESC")
       .skip(skip)
       .take(limit)

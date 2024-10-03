@@ -36,7 +36,7 @@ export class BlogEntity extends BaseEntity {
   time_for_study: string;
 
   @Column()
-  authorID: number;
+  authorId: number;
 
   @Column({ default: BlogStatus.Draft })
   status: string;
