@@ -52,4 +52,13 @@ export class BlogController {
   delete(@Param("id", ParseIntPipe) id: number) {
     return this.blogService.delete(id);
   }
+
+  @Put("/:id")
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() blogDto: UpdateBlogDto
+  ) {
+    return this.blogService.update(id, blogDto);
+  }
 }
