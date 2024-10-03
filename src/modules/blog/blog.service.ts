@@ -28,6 +28,7 @@ import { CategoryService } from "../category/category.service";
 import { BlogCategoryEntity } from "./entities/blog-category.entity";
 import { EntityName } from "src/common/enums/entity.enum";
 import { BlogLikesEntity } from "./entities/like.entity";
+import { BlogBookmarkEntity } from "./entities/bookmark.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -40,6 +41,9 @@ export class BlogService {
 
     @InjectRepository(BlogLikesEntity)
     private blogLikesRepository: Repository<BlogLikesEntity>,
+
+    @InjectRepository(BlogBookmarkEntity)
+    private blogBookmarkRepository: Repository<BlogBookmarkEntity>,
 
     @Inject(REQUEST) private request: Request,
 
@@ -149,6 +153,7 @@ export class BlogService {
       ])
       .where(where, { category, search })
       .loadRelationCountAndMap("blog.likes", "blog.likes")
+      .loadRelationCountAndMap("blog.bookmarks", "blog.bookmarks")
       .orderBy("blog.id", "DESC")
       .skip(skip)
       .take(limit)
@@ -269,6 +274,23 @@ export class BlogService {
       message = PublicMessage.DisLiked;
     } else {
       await this.blogLikesRepository.insert({ blogId, userId });
+    }
+
+    return { message };
+  }
+  async bookmarkToggle(blogId: number) {
+    const { id: userId } = this.request.user;
+    const blog = await this.checkExistBlogById(blogId);
+    const isBookmarked = await this.blogBookmarkRepository.findOneBy({
+      userId,
+      blogId,
+    });
+    let message = PublicMessage.Bookmarked;
+    if (isBookmarked) {
+      await this.blogBookmarkRepository.delete({ id: isBookmarked.id });
+      message = PublicMessage.UnBookmarked;
+    } else {
+      await this.blogBookmarkRepository.insert({ blogId, userId });
     }
 
     return { message };
