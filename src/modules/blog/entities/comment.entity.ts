@@ -26,7 +26,7 @@ export class BlogCommentEntity extends BaseEntity {
   @Column()
   userId: number;
 
-  @Column()
+  @Column({ nullable: true })
   parentId: number;
 
   // realtions
