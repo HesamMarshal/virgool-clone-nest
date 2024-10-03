@@ -27,15 +27,22 @@ import { isArray } from "class-validator";
 import { CategoryService } from "../category/category.service";
 import { BlogCategoryEntity } from "./entities/blog-category.entity";
 import { EntityName } from "src/common/enums/entity.enum";
+import { BlogLikesEntity } from "./entities/like.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
   constructor(
     @InjectRepository(BlogEntity)
     private blogRepository: Repository<BlogEntity>,
+
     @InjectRepository(BlogCategoryEntity)
     private blogCategoryRepository: Repository<BlogCategoryEntity>,
+
+    @InjectRepository(BlogLikesEntity)
+    private blogLikesRepository: Repository<BlogLikesEntity>,
+
     @Inject(REQUEST) private request: Request,
+
     private categoryService: CategoryService
   ) {}
 
@@ -238,6 +245,24 @@ export class BlogService {
     return {
       message: PublicMessage.Updated,
     };
+  }
+
+  async likeToggle(blogId: number) {
+    const { id: userId } = this.request.user;
+    const blog = await this.checkExistBlogById(blogId);
+    const isLiked = await this.blogLikesRepository.findOneBy({
+      userId,
+      blogId,
+    });
+    let message = PublicMessage.Liked;
+    if (isLiked) {
+      await this.blogLikesRepository.delete({ id: isLiked.id });
+      message = PublicMessage.DisLiked;
+    } else {
+      await this.blogLikesRepository.insert({ blogId, userId });
+    }
+
+    return { message };
   }
 
   // Helpers
