@@ -28,7 +28,9 @@ export enum CategoryMessage {
   Updated = "دسته بندی با موفقیت به روز رسانی گردید",
 }
 
-export enum NotFoundMessage {}
+export enum NotFoundMessage {
+  NotFoundPost = "مقاله ای یافت نشد",
+}
 export enum ValidationMessage {
   InvalidImageForamt = "فرمت تصویر وارد شده قابل قبول نیست",
   InvalidEmailForamt = "فرمت ایمیل وارد شده قابل قبول نیست",
@@ -39,4 +41,5 @@ export enum PublicMessage {
   LoggedIn = "با موفقیت وارد حساب کاربری خود شدید",
   Created = "با موفقیت ایجاد شد",
   Updated = "به روز رسانی شد",
+  Deleted = "با موفقیت حذف شد",
 }
