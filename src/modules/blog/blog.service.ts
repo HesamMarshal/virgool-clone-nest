@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, Scope } from "@nestjs/common";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BlogEntity } from "./entities/blog.entity";
 import { FindOptionsWhere, Repository } from "typeorm";
@@ -9,6 +15,7 @@ import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
 import {
   BadRequestMessage,
+  NotFoundMessage,
   PublicMessage,
 } from "src/common/enums/message.enum";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
@@ -154,6 +161,17 @@ export class BlogService {
       pagination: paginationGenerator(count, page, limit),
       blogs,
     };
+  }
+  async checkExistBlogById(id: number) {
+    const blog = await this.blogRepository.findOneBy({ id });
+    if (!blog) throw new NotFoundException(NotFoundMessage.NotFoundPost);
+    return blog;
+  }
+
+  async delete(id: number) {
+    await this.checkExistBlogById(id);
+    await this.blogRepository.delete(id);
+    return { message: PublicMessage.Deleted };
   }
 
   // Helpers
