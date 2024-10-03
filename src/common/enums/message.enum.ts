@@ -46,4 +46,5 @@ export enum PublicMessage {
   DisLiked = "لایک برداشته شد",
   Bookmarked = "مقاله بوک مارک شد",
   UnBookmarked = "از بوک مارک خارج شد",
+  CommentCreated = "نظر شما با موفقیت ثبت شد",
 }
