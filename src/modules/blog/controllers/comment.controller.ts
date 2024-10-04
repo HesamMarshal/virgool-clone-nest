@@ -18,6 +18,11 @@ import { AuthGuard } from "../../auth/guards/auth.guard";
 import { BlogService } from "../services/blog.service";
 import { BlogCommentService } from "../services/comment.service";
 import { CreateCommentDto } from "../dto/comment.dto";
+import { SkipAuth } from "src/common/decorators/skip-auth.decorator";
+import { Pagination } from "src/common/decorators/pagination.decorator";
+import { FilterBlog } from "src/common/decorators/filter.decorator copy";
+import { PaginationDto } from "src/common/dtos/pagination.dto";
+import { FilterBlogDto } from "../dto/blog.dto";
 
 @Controller("blog-comment")
 @ApiTags("Blog")
@@ -29,5 +34,11 @@ export class BlogCommentController {
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   create(@Body() commentDto: CreateCommentDto) {
     return this.blogCommentService.create(commentDto);
+  }
+
+  @Get("/")
+  @Pagination()
+  find(@Query() paginationDto: PaginationDto) {
+    return this.blogCommentService.find(paginationDto);
   }
 }
