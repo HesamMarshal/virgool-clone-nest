@@ -41,4 +41,14 @@ export class BlogCommentController {
   find(@Query() paginationDto: PaginationDto) {
     return this.blogCommentService.find(paginationDto);
   }
+
+  @Put("/accept/:id")
+  accept(@Param("id", ParseIntPipe) id: number) {
+    return this.blogCommentService.accept(id);
+  }
+
+  @Put("/reject/:id")
+  reject(@Param("id", ParseIntPipe) id: number) {
+    return this.blogCommentService.reject(id);
+  }
 }

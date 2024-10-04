@@ -14,7 +14,11 @@ import { BlogEntity } from "../entities/blog.entity";
 import { CreateCommentDto } from "../dto/comment.dto";
 import { BlogCommentEntity } from "../entities/comment.entity";
 import { BlogService } from "./blog.service";
-import { PublicMessage } from "src/common/enums/message.enum";
+import {
+  BadRequestMessage,
+  NotFoundMessage,
+  PublicMessage,
+} from "src/common/enums/message.enum";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import {
   paginationGenerator,
@@ -83,5 +87,36 @@ export class BlogCommentService {
     };
   }
 
+  async accept(id: number) {
+    const comment = await this.checkExistById(id);
+    if (comment.accepted)
+      throw new BadRequestException(BadRequestMessage.AlreadyAccepted);
+
+    comment.accepted = true;
+    await this.blogCommentRepository.save(comment);
+    return {
+      message: PublicMessage.Updated,
+    };
+  }
+
+  async reject(id: number) {
+    const comment = await this.checkExistById(id);
+    if (!comment.accepted)
+      throw new BadRequestException(BadRequestMessage.AlreadyRejected);
+
+    comment.accepted = false;
+    await this.blogCommentRepository.save(comment);
+    return {
+      message: PublicMessage.Updated,
+    };
+  }
+
   // Helpers
+
+  async checkExistById(id: number) {
+    const comment = await this.blogCommentRepository.findOneBy({ id });
+    if (!comment) throw new NotFoundException(NotFoundMessage.NotFoundComment);
+
+    return comment;
+  }
 }
