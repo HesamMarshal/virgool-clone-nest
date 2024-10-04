@@ -4,6 +4,8 @@ export enum BadRequestMessage {
   SomethingWrong = "خطایی پیش آمده",
   InvalidEmail = "ایمیل وارد شده صحیح نمی باشد",
   InvalidCategories = "دسته بندی وارد شده صحیح نمی باشد",
+  AlreadyAccepted = "دیدگاه از قبل پذیرفته شده است",
+  AlreadyRejected = "دیدگاه از قبل رد شده است",
 }
 export enum AuthMessage {
   NotFoundAccount = "حساب کاربری یافت نشد",
@@ -30,6 +32,7 @@ export enum CategoryMessage {
 
 export enum NotFoundMessage {
   NotFoundPost = "مقاله ای یافت نشد",
+  NotFoundComment = "دیدگاه یافت نشد",
 }
 export enum ValidationMessage {
   InvalidImageForamt = "فرمت تصویر وارد شده قابل قبول نیست",
