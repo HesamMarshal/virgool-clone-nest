@@ -304,7 +304,7 @@ export class BlogService {
     return { message };
   }
 
-  async findOneBySlug(slug: string) {
+  async findOneBySlug(slug: string, paginationDto: PaginationDto) {
     const userId = this.request?.user?.id;
     const blog = await this.blogRepository
       .createQueryBuilder(EntityName.Blog)
